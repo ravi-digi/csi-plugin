@@ -17,21 +17,21 @@ limitations under the License.
 package common
 
 import (
-    "bytes"
-    "fmt"
-    "os"
-    "os/exec"
-    "path/filepath"
-    "strconv"
-    "strings"
-    "time"
+	"bytes"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
-    log "github.com/sirupsen/logrus"
-    unix "golang.org/x/sys/unix"
+	log "github.com/sirupsen/logrus"
+	unix "golang.org/x/sys/unix"
 
-    "google.golang.org/grpc/codes"
-    "google.golang.org/grpc/status"
-    "k8s.io/kubernetes/pkg/util/mount"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"k8s.io/kubernetes/pkg/util/mount"
 )
 
 func execCommandHelper(command string, args ...string) ([]byte, error) {
@@ -89,13 +89,11 @@ func MountFilesystem(sourcefile, destfile, fsType string, mountFlags []string) e
     mounter := mount.New("")
     if exists, _ := mounter.ExistsPath(destfile); !exists {
         err := os.MkdirAll(filepath.Dir(destfile), os.FileMode(0644))
-        if err == nil {
-            err = mounter.MakeFile(destfile)
-        }
         if err != nil {
             log.Errorf("could not make destination path for mount, %v", err)
             return status.Error(codes.Internal, err.Error())
         }
+        err = mounter.MakeFile(destfile)
     }
 
     err := mounter.Mount(sourcefile, destfile, fsType, mountFlags)

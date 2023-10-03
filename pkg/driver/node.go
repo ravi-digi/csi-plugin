@@ -242,7 +242,6 @@ func (d *CSIDriver) NodePublishVolume(
 
     }
 
-    return &csi.NodePublishVolumeResponse{}, nil
 }
 
 func (d *CSIDriver) unpublishFileBackedVolume(
@@ -492,8 +491,6 @@ func (d *CSIDriver) NodeGetVolumeStats(ctx context.Context,
             },
         }, nil
     }
-
-    return nil, status.Error(codes.NotFound, common.VolumeNotFound)
 }
 
 func (d *CSIDriver) NodeExpandVolume(
@@ -542,7 +539,7 @@ func (d *CSIDriver) NodeExpandVolume(
         typeMount = true
     }
 
-    if fileBacked{
+    if fileBacked {
         // Ensure it's file-backed, otherwise no-op
         // Resize device
         err := common.ExpandDeviceFileSize(common.ShareStagingDir +req.GetVolumeId(), requestedSize)
@@ -554,10 +551,10 @@ func (d *CSIDriver) NodeExpandVolume(
             if err != nil {
                 return nil, err
             }
-        }
-        return &csi.NodeExpandVolumeResponse{
-            CapacityBytes: requestedSize,
-            }, nil
+    }
+    return &csi.NodeExpandVolumeResponse{
+        CapacityBytes: requestedSize,
+        }, nil
     } else {
         return nil, nil
     }
